@@ -46,7 +46,7 @@
     #pragma config FVBUSONIO = ON // controlled by USB module
 
 int readADC(void);
-int pixel_display(char message);
+int pixel_display(char message,int counter);
 
 int main() {
     // startup
@@ -75,8 +75,13 @@ int main() {
     
     display_init();
     display_clear();
-    char H=0x24;
-    pixel_display(H);
+    char message[100];
+    sprintf(message,"It works!!");
+    int counter=0;
+    while(message[counter]) {
+        pixel_display(message[counter],counter);
+        counter++;
+    }
     display_draw();
     
     
@@ -244,25 +249,25 @@ static const char ASCII[96][5] = {
 }; // end char ASCII[96][5]
 
 
-int pixel_display(char message) {    
-    int ASCII_var, ASCII_array[5];
-    int ii, jj, dummy[8][1] = {1, 1, 1, 1, 1, 1, 1, 1}, line, symbol[8], pixels[8][5];
-    
-    for (ii=0; ii<5; ii++) {
-        ASCII_var = message - 0x20; // gets row number in ASCII
-        ASCII_array[ii] = ASCII[ASCII_var][ii]; // gives one array of 5 hex numbers from ASCII
-        
-        line = ASCII_array[ii];
-        for (jj=0; jj<8; jj++) { // for loop creates an array out of the hex value in ASCII_array
-            pixels[jj][ii] = line & 1;
-            line>>=1;
+int pixel_display(char message,int counter) {
+        int ASCII_var, ASCII_array[5];
+        int ii, jj, dummy[8][1] = {1, 1, 1, 1, 1, 1, 1, 1}, line, symbol[8], pixels[8][5];
+
+        for (ii=0; ii<5; ii++) {
+            ASCII_var = message - 0x20; // gets row number in ASCII
+            ASCII_array[ii] = ASCII[ASCII_var][ii]; // gives one array of 5 hex numbers from ASCII
+
+            line = ASCII_array[ii];
+            for (jj=0; jj<8; jj++) { // for loop creates an array out of the hex value in ASCII_array
+                pixels[jj][ii] = line & 1;
+                line>>=1;
+            }
         }
-    }
-    
-    int row, col;
-    for (col=0; col<5; col++) {
-        for (row=0; row<8; row++) {
-            display_pixel_set(row,col,pixels[row][col]);
+
+        int row, col;
+        for (col=0; col<5; col++) {
+            for (row=0; row<8; row++) {
+                display_pixel_set(row,col+(counter*5),pixels[row][col]);
+            }
         }
-    }
 }
