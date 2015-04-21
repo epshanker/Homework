@@ -9,6 +9,7 @@
 #include<sys/attribs.h> // __ISR macro
 #include"i2c_display.h"
 #include"i2c_master_int.h"
+#include"accel.h"
 
 // DEVCFG0
     #pragma config DEBUG = OFF // no debugging
@@ -72,11 +73,36 @@ int main() {
     __builtin_enable_interrupts();
     
     
+    // OLED Display
+    //display_init();
+    //display_clear();
+    //char message[100];
+    //sprintf(message,"It works!!");
+    //int counter=0;
+    //while(message[counter]) {
+    //    pixel_display(message[counter],counter);
+    //    counter++;
+    //}
+    //display_draw();
     
+    
+    // accelerometer data
+    acc_setup();
+    short accels[3]; // accelerations for the 3 axes
+    short mags[3]; // magnetometer readings for the 3 axes
+    short temp;
+    // read the accelerometer from all 3 axes
+    // the accelerometer and the pic32 are both little endian by default (the lowest address as the LSB)
+    // the accelerations are 16-bit twos compliment numbers, the same as a short
+    acc_read_register(OUT_X_L_A,(unsigned char *) accels,6);
+    // need to read all 6 bytes in one transaction to get an update
+    acc_read_register(OUT_X_L_M,(unsigned char *) mags,6);
+    // read the temperature data. It's a right justified 12 bit two's compliment number
+    acc_read_register(TEMP_OUT_L,(unsigned char *) &temp,2);
     display_init();
     display_clear();
     char message[100];
-    sprintf(message,"It works!!");
+    sprintf(message,"%d %d %d %d %d %d",accels);
     int counter=0;
     while(message[counter]) {
         pixel_display(message[counter],counter);
@@ -85,13 +111,24 @@ int main() {
     display_draw();
     
     
+    // OUTLINE FOR ACCELEROMETER BARS ON OLED (HW5)
+    // initialize accelerometer, variables
+    // while loop so that OLED is constantly being read/updated
+    // read the acc register for acceleration data
+        // 6 bytes of data (2 bites for each direction of acceleration)
+    // scale acceleration data so that data is in terms of g
+    // set pixels
+        // for loop that converts g's to pixels (2g/64 pixels)
+            // loop through array 64 times, turning bits on until conversion from g's to pixels is exceed, then turn the rest of the pixels off
+            // if negative, ???
+    // display pixels
+    
     
     // set up USER pin as input
     ANSELBbits.ANSB13 = 0; // sets pin B13 to digital input
 
     // set up LED1 as digital output
     TRISBbits.TRISB7 = 0;
-    //RPB7Rbits.RPB7R = 0b0001; // set B7 to U1TX
     
     // Set LED2 as OC1 using Timer2 at 1kHz
     RPB15Rbits.RPB15R = 0b0101; // sets pin B15 to output compare
