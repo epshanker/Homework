@@ -48,6 +48,8 @@
 
 int readADC(void);
 int pixel_display(char message,int counter);
+int display_acc_x(int pixelNums[2]);
+int display_acc_y(int pixelNums[2]);
 
 int main() {
     // startup
@@ -70,6 +72,7 @@ int main() {
     // disable JTAG to be able to use TDI, TDO, TCK, TMS as digital
     DDPCONbits.JTAGEN = 0;
 
+    acc_setup();
     __builtin_enable_interrupts();
     
     
@@ -86,42 +89,28 @@ int main() {
     //display_draw();
     
     
-    // accelerometer data
-    acc_setup();
-    short accels[3]; // accelerations for the 3 axes
-    short mags[3]; // magnetometer readings for the 3 axes
-    short temp;
-    // read the accelerometer from all 3 axes
-    // the accelerometer and the pic32 are both little endian by default (the lowest address as the LSB)
-    // the accelerations are 16-bit twos compliment numbers, the same as a short
-    acc_read_register(OUT_X_L_A,(unsigned char *) accels,6);
-    // need to read all 6 bytes in one transaction to get an update
-    acc_read_register(OUT_X_L_M,(unsigned char *) mags,6);
-    // read the temperature data. It's a right justified 12 bit two's compliment number
-    acc_read_register(TEMP_OUT_L,(unsigned char *) &temp,2);
-    display_init();
-    display_clear();
-    char message[100];
-    sprintf(message,"%d %d %d %d %d %d",accels);
-    int counter=0;
-    while(message[counter]) {
-        pixel_display(message[counter],counter);
-        counter++;
-    }
-    display_draw();
-    
-    
     // OUTLINE FOR ACCELEROMETER BARS ON OLED (HW5)
     // initialize accelerometer, variables
+    short accels[3], mags[3], temp;
+    float gs[3];     // converted acceleration data to g's
+    int pixelNums[2]; // number of pixels in OLED (only x and y will be displayed)
+    int ii=0;
     // while loop so that OLED is constantly being read/updated
-    // read the acc register for acceleration data
-        // 6 bytes of data (2 bites for each direction of acceleration)
-    // scale acceleration data so that data is in terms of g
-    // set pixels
-        // for loop that converts g's to pixels (2g/64 pixels)
-            // loop through array 64 times, turning bits on until conversion from g's to pixels is exceed, then turn the rest of the pixels off
-            // if negative, ???
-    // display pixels
+    while(1) {
+        // read the acc register for acceleration data
+            // 6 bytes of data (2 bites for each direction of acceleration)
+        acc_read_register(OUT_X_L_A,(unsigned char *) accels,6);
+        display_init();
+        display_clear();
+        for (ii=0;ii<3;ii++) {
+            gs[ii]=(float)accels[ii]/(float) 16384; 
+        }
+        pixelNums[0] = (float) accels[0]/(float)512;
+        pixelNums[1] = (float) accels[1]/(float)1024;
+        display_acc_x(pixelNums);
+        display_acc_y(pixelNums);
+        display_draw();
+    }
     
     
     // set up USER pin as input
@@ -284,6 +273,48 @@ static const char ASCII[96][5] = {
 ,{0x10, 0x08, 0x08, 0x10, 0x08} // 7e ?
 ,{0x00, 0x06, 0x09, 0x09, 0x06} // 7f ?
 }; // end char ASCII[96][5]
+
+int display_acc_x(int pixelNums[2]) {
+    int startx = 64;
+    int starty = 32;
+    int mm,nn;
+    if (pixelNums[0] >= 0) {
+        for (mm=0;mm<pixelNums[0];mm++) {
+            //if ((startx+mm)<128) {
+                display_pixel_set(starty,(startx-mm),1);
+            //}
+        }
+    }
+    if (pixelNums[0] < 0) {
+        //pixelNums[0] = -1 * pixelNums[0];
+        for (nn=0;nn>pixelNums[0];nn--) {
+            //if (startx-nn>0) {
+                display_pixel_set(starty,(startx-nn),1);
+            //}
+        }
+    }
+}
+
+int display_acc_y(int pixelNums[2]) {
+    int startx = 64;
+    int starty = 32;
+    int oo,pp;
+    if (pixelNums[1] >= 0) {
+        for (oo=0;oo<pixelNums[1];oo++) {
+            //if ((starty+oo)<64) {
+                display_pixel_set((starty-oo),startx,1);
+            //}
+        }
+    }
+    if (pixelNums[1] < 0) {
+        //pixelNums[1] = -1 * pixelNums[1];
+        for (pp=0;pp>pixelNums[1];pp--) {
+            //if (starty-pp>0) {
+                display_pixel_set((starty-pp),startx,1);
+            //}
+        }
+    }
+}
 
 
 int pixel_display(char message,int counter) {
