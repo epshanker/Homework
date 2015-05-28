@@ -17,7 +17,7 @@
     definitions (or include any files that do).  It only provides macro
     definitions for build-time configuration options that are not instantiated
     until used by another MPLAB Harmony module or application.
-    
+
     Created with MPLAB Harmony Version 1.01
 *******************************************************************************/
 
@@ -149,7 +149,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /* EP0 size in bytes */
 #define USB_DEVICE_EP0_BUFFER_SIZE      8
 
-#define USB_DEVICE_SOF_EVENT_ENABLE
 
 
 
@@ -157,45 +156,32 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /* Maximum instances of HID function driver */
 #define USB_DEVICE_HID_INSTANCES_NUMBER     1
 
+
+
+
+
+
 /* HID Transfer Queue Size for both read and
    write. Applicable to all instances of the
    function driver */
 #define USB_DEVICE_HID_QUEUE_DEPTH_COMBINED 2
 
+
 // *****************************************************************************
 // *****************************************************************************
-// Section: Configuration Specific Application Definitions
+// Section: Configuration specific application constants
 // *****************************************************************************
 // *****************************************************************************
-
-/* Tick time in 1msec units */
-
-#define APP_USB_SWITCH_DEBOUNCE_COUNT (160)
-
-/* Macro defines the conversion factor to be
- * multiplied to convert to millisecs*/
-
-#define APP_USB_CONVERT_TO_MILLISECOND (1)
-
-/* Macro defines USB internal DMA Buffer criteria*/
 
 #define APP_MAKE_BUFFER_DMA_READY
 
-/* Macros defines board specific led */
+#define APP_USB_LED_1 BSP_LED_3
+#define APP_USB_LED_2 BSP_LED_4
+#define APP_USB_LED_3 BSP_LED_5
 
-#define APP_USB_LED_1    BSP_LED_3
+#define APP_USB_SWITCH_1 BSP_SWITCH_3
 
-/* Macros defines board specific led */
 
-#define APP_USB_LED_2    BSP_LED_4
-
-/* Macros defines board specific led */
-
-#define APP_USB_LED_3    BSP_LED_5
-
-/* Macros defines board specific switch */
-
-#define APP_USB_SWITCH_1    BSP_SWITCH_3
 
 
 #endif // _SYSTEM_CONFIG_H

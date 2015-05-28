@@ -77,8 +77,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 /* Clock System Service Configuration Options
 */
-#define SYS_CLK_FREQ                        40000000
-#define SYS_CLK_BUS_PERIPHERAL_1            40000000
+#define SYS_CLK_FREQ                        80000000ul
+#define SYS_CLK_BUS_PERIPHERAL_1            100000000ul
 #define SYS_CLK_CONFIG_PRIMARY_XTAL         8000000ul
 #define SYS_CLK_CONFIG_SECONDARY_XTAL       32768ul
 
@@ -104,9 +104,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define SYS_PORT_D_TRIS         0xfff8
 #define SYS_PORT_D_ODC          0x0
-
-
-
 
 
 
@@ -149,7 +146,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /* EP0 size in bytes */
 #define USB_DEVICE_EP0_BUFFER_SIZE      8
 
-#define USB_DEVICE_SOF_EVENT_ENABLE
 
 
 
@@ -167,27 +163,21 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
    function driver */
 #define USB_DEVICE_HID_QUEUE_DEPTH_COMBINED 2
 
-/* Tick time in 1msec units */
-#define APP_USB_SWITCH_DEBOUNCE_COUNT (160)
+// *****************************************************************************
+// *****************************************************************************
+// Section: Configuration specific application constants
+// *****************************************************************************
+// *****************************************************************************
 
-/* Macro defines the conversion factor to be
- * multiplied to convert to millisecs*/
-#define APP_USB_CONVERT_TO_MILLISECOND (1)
-
-/* Macro defines USB internal DMA Buffer criteria*/
 #define APP_MAKE_BUFFER_DMA_READY
 
-/* Macros defines board specific led */
-#define APP_USB_LED_1    BSP_LED_1
+#define APP_USB_LED_1 BSP_LED_1
+#define APP_USB_LED_2 BSP_LED_2
+#define APP_USB_LED_3 BSP_LED_3
 
-/* Macros defines board specific led */
-#define APP_USB_LED_2    BSP_LED_2
+#define APP_USB_SWITCH_1 BSP_SWITCH_1
 
-/* Macros defines board specific led */
-#define APP_USB_LED_3    BSP_LED_3
 
-/* Macros defines board specific switch */
-#define APP_USB_SWITCH_1    BSP_SWITCH_1
 
 #endif // _SYSTEM_CONFIG_H
 /*******************************************************************************

@@ -8,12 +8,12 @@
       <Checksum>A032B81151CAABCDE708997B20EF5CCA</Checksum>
     </Entry>
     <Entry>
-      <Name>sys_clk_static.h</Name>
-      <Checksum>5136E2C3EE2A15E666B1927251CBCEAA</Checksum>
-    </Entry>
-    <Entry>
       <Name>system_definitions.h</Name>
       <Checksum>211A461F851D31EF97E52BF681B10DCE</Checksum>
+    </Entry>
+    <Entry>
+      <Name>sys_clk_static.h</Name>
+      <Checksum>5136E2C3EE2A15E666B1927251CBCEAA</Checksum>
     </Entry>
     <Entry>
       <Name>system_init.c</Name>
@@ -29,7 +29,7 @@
     </Entry>
     <Entry>
       <Name>system_config.h</Name>
-      <Checksum>923BC8DE57BE79304E947BEA202C8066</Checksum>
+      <Checksum>BADAE23B7F464FF9F4A86703CEBB2979</Checksum>
     </Entry>
     <Entry>
       <Name>sys_ports_static.c</Name>

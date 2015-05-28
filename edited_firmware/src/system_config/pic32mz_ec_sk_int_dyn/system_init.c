@@ -105,7 +105,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #pragma config FETHIO =     OFF
 #pragma config PGL1WAY =    OFF
 #pragma config PMDL1WAY =   OFF
-#pragma config IOL1WAY =    ON
+#pragma config IOL1WAY =    OFF
 #pragma config FUSBIDIO =   OFF
 
 /*** BF1SEQ0 ***/
@@ -126,31 +126,21 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  ****************************************************/
 const uint8_t hid_rpt0[] =
 {
-    0x05, 0x01, /* Usage Page (Generic Desktop)        */
-   0x09, 0x02, /* Usage (Mouse)                       */
-   0xA1, 0x01, /* Collection (Application)            */
-   0x09, 0x01, /* Usage (Pointer)                     */
-   0xA1, 0x00, /* Collection (Physical)               */
-   0x05, 0x09, /* Usage Page (Buttons)                */
-   0x19, 0x01, /* Usage Minimum (01)                  */
-   0x29, 0x03, /* Usage Maximum (03)                  */
-   0x15, 0x00, /* Logical Minimum (0)                 */
-   0x25, 0x01, /* Logical Maximum (1)                 */
-   0x95, 0x03, /* Report Count (3)                    */
-   0x75, 0x01, /* Report Size (1)                     */
-   0x81, 0x02, /* Input (Data, Variable, Absolute)    */
-   0x95, 0x01, /* Report Count (1)                    */
-   0x75, 0x05, /* Report Size (5)                     */
-   0x81, 0x01, /* Input (Constant)    ;5 bit padding  */
-   0x05, 0x01, /* Usage Page (Generic Desktop)        */
-   0x09, 0x30, /* Usage (X)                           */
-   0x09, 0x31, /* Usage (Y)                           */
-   0x15, 0x81, /* Logical Minimum (-127)              */
-   0x25, 0x7F, /* Logical Maximum (127)               */
-   0x75, 0x08, /* Report Size (8)                     */
-   0x95, 0x02, /* Report Count (2)                    */
-   0x81, 0x06, /* Input (Data, Variable, Relative)    */
-   0xC0, 0xC0
+    0x06, 0x00, 0xFF,       // Usage Page = 0xFF00 (Vendor Defined Page 1)
+    0x09, 0x01,             // Usage (Vendor Usage 1)
+    0xA1, 0x01,             // Collection (Application)
+    0x19, 0x01,             // Usage Minimum
+    0x29, 0x40,             // Usage Maximum 	//64 input usages total (0x01 to 0x40)
+    0x15, 0x01,             // Logical Minimum (data bytes in the report may have minimum value = 0x00)
+    0x25, 0x40,      	    // Logical Maximum (data bytes in the report may have maximum value = 0x00FF = unsigned 255)
+    0x75, 0x08,             // Report Size: 8-bit field size
+    0x95, 0x40,             // Report Count: Make sixty-four 8-bit fields (the next time the parser hits an "Input", "Output", or "Feature" item)
+    0x81, 0x00,             // Input (Data, Array, Abs): Instantiates input packet fields based on the above report size, count, logical min/max, and usage.
+    0x19, 0x01,             // Usage Minimum
+    0x29, 0x40,             // Usage Maximum 	//64 output usages total (0x01 to 0x40)
+    0x91, 0x00,             // Output (Data, Array, Abs): Instantiates output packet fields.  Uses same report size and count as "Input" fields, since nothing new/different was specified to the parser since the "Input" item.
+    0xC0                    // End Collection
+
 };
 /**************************************************
  * USB Device Function Driver Init Data
@@ -195,61 +185,13 @@ const USB_DEVICE_DESCRIPTOR usbDeviceDescriptor =
     0x00,                       // Subclass code
     0x00,                       // Protocol code
     USB_DEVICE_EP0_BUFFER_SIZE, // Max packet size for EP0, see usb_config.h
-    0x0458,                     // Vendor ID
-    0x0000,                     // Product ID: Custom HID device demo
-    0x0003,                     // Device release number in BCD format
+    0x04D8,                     // Vendor ID
+    0x003F,                     // Product ID: Custom HID device demo
+    0x0002,                     // Device release number in BCD format
     0x01,                       // Manufacturer string index
     0x02,                       // Product string index
     0x00,                       // Device serial number string index
     0x01                        // Number of possible configurations
-};
-
-/*******************************************
- *  Device Configuration Decriptor
- *******************************************/
-const uint8_t highSpeedConfigurationDescriptor[] =
-{
-    /* Configuration Descriptor */
-
-    0x09,                                                // Size of this descriptor in bytes
-    USB_DESCRIPTOR_CONFIGURATION,                        // CONFIGURATION descriptor type
-    0x22,0x00,                                           // Total length of data for this cfg
-    1,                                                   // Number of interfaces in this cfg
-    1,                                                   // Index value of this configuration
-    0,                                                   // Configuration string index
-    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED,  // Attributes, see usb_device.h
-    50,                                                  // Max power consumption (2X mA)
-
-    /* Interface Descriptor */
-
-    0x09,                                            // Size of this descriptor in bytes
-    USB_DESCRIPTOR_INTERFACE,                        // INTERFACE descriptor type
-    0,                                               // Interface Number
-    0,                                               // Alternate Setting Number
-    1,                                               // Number of endpoints in this intf
-    USB_HID_CLASS_CODE,                              // Class code
-    USB_HID_SUBCLASS_CODE_BOOT_INTERFACE_SUBCLASS ,  // Subclass code
-    USB_HID_PROTOCOL_CODE_MOUSE,                     // Protocol code
-    0,                                               // Interface string index
-
-    /* HID Class-Specific Descriptor */
-
-    0x09,                           // Size of this descriptor in bytes
-    USB_HID_DESCRIPTOR_TYPES_HID,   // HID descriptor type
-    0x11, 0x01,                     // HID Spec Release Number in BCD format (1.11)
-    0x00,                           // Country Code (0x00 for Not supported)
-    0x1,                            // Number of class descriptors, see usbcfg.h
-    USB_HID_DESCRIPTOR_TYPES_REPORT,// Report descriptor type
-    0x32,0x00,                      // Size of the report descriptor
-
-    /* Endpoint Descriptor */
-
-    0x07,                           // Size of this descriptor
-    USB_DESCRIPTOR_ENDPOINT,        // Endpoint Descriptor
-    0x1 | USB_EP_DIRECTION_IN,      // EndpointAddress
-    USB_TRANSFER_TYPE_INTERRUPT,    // Attributes
-    0x40, 0x00,                     // Size
-    0x01                            // Interval
 };
 
 /*******************************************
@@ -269,6 +211,61 @@ const USB_DEVICE_QUALIFIER deviceQualifierDescriptor1 =
     0x00                                // Reserved for future use.
 };
 
+/*******************************************
+ *  Device Configuration Decriptor
+ *******************************************/
+const uint8_t highSpeedConfigurationDescriptor1[] =
+{
+    /* Configuration Descriptor Header */
+    0x09,			                        			// Size of this descriptor in bytes
+    USB_DESCRIPTOR_CONFIGURATION,                       // CONFIGURATION descriptor type
+    0x29,0x00,            	                        	// Total length of data for this cfg
+    1,                                                  // Number of interfaces in this cfg
+    1,                                                  // Index value of this configuration
+    0,                                                  // Configuration string index
+    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED, // Attributes, see usb_chapter_9.h
+    50,                                                 // Max power consumption (2X mA)
+
+    /* Interface Descriptor */
+    0x09,						// Size of this descriptor in bytes
+    USB_DESCRIPTOR_INTERFACE,   // INTERFACE descriptor type
+    0,                          // Interface Number
+    0,                          // Alternate Setting Number
+    2,                          // Number of endpoints in this intf
+    USB_HID_CLASS_CODE,         // Class code
+    0,     						// Subclass code
+    0,     						// Protocol code
+    0,                          // Interface string index
+
+    /* HID Class-Specific Descriptor */
+
+    0x09,			    			// Size of this descriptor in bytes
+    USB_HID_DESCRIPTOR_TYPES_HID,   // HID descriptor type
+    0x11,0x01,                      // HID Spec Release Number in BCD format (1.11)
+    0x00,                           // Country Code (0x00 for Not supported)
+    0x01,                           // Number of class descriptors, see usbcfg.h
+    USB_HID_DESCRIPTOR_TYPES_REPORT,// Report descriptor type
+    0x1C,0x00,            // Size of the report descriptor
+
+    /* Endpoint Descriptor */
+
+    0x07,
+    USB_DESCRIPTOR_ENDPOINT,        // Endpoint Descriptor
+    0x1 | USB_EP_DIRECTION_IN,      // EndpointAddress
+    USB_TRANSFER_TYPE_INTERRUPT,    // Attributes
+    0x40,0x00,                      // Size
+    0x01,                           // Interval
+
+    /* Endpoint Descriptor */
+
+    0x07,
+    USB_DESCRIPTOR_ENDPOINT,        // Endpoint Descriptor
+    0x1 | USB_EP_DIRECTION_OUT,     // EndpointAddress
+    USB_TRANSFER_TYPE_INTERRUPT,    // Attributes
+    0x40,0x00,                      // Size
+    0x01                            // Interval
+};
+
 /**************************************
  *  String descriptors.
  *************************************/
@@ -276,8 +273,8 @@ const USB_DEVICE_QUALIFIER deviceQualifierDescriptor1 =
 /* Language code string descriptor 0 */
 const struct
 {
-    uint8_t bLength;    // Length of this descriptor
-    uint8_t bDscType;   // String type descriptor
+    uint8_t bLength;    // Length of this descriptor.
+    uint8_t bDscType;   // String Descritpor type
     uint16_t string[1]; // String
 }
 sd000 =
@@ -287,11 +284,11 @@ sd000 =
     {0x0409 }
 };
 
-/* Manufacturer string descriptor 1 */
+/* Manufacturer string descriptor 1*/
 const struct
 {
-    uint8_t bLength;    // Length of this descriptor
-    uint8_t bDscType;   // String type descriptor
+    uint8_t bLength;    // Length of this descriptor.
+    uint8_t bDscType;   // String Descritpor type
     uint16_t string[25];// String
 }
 sd001 =
@@ -299,22 +296,22 @@ sd001 =
     sizeof(sd001),
     USB_DESCRIPTOR_STRING,
     {'M','i','c','r','o','c','h','i','p',' ',
-    'T','e','c','h','n','o','l','o','g','y',' ','I','n','c','.' }
+    'T','e','c','h','n','o','l','o','g','y',' ','I','n','c','.'}
 };
 
 /* Product string descriptor 2 */
 const struct
 {
-    uint8_t bLength;    // Length of this descriptor
-    uint8_t bDscType;   // String type descriptor
-    uint16_t string[14];// String
+    uint8_t bLength;    // Length of this descriptor.
+    uint8_t bDscType;   // String Descritpor type
+    uint16_t string[22];// String
 }
 sd002 =
 {
     sizeof(sd002),
     USB_DESCRIPTOR_STRING,
-    {'H','I','D',' ',
-    'M','o','u','s','e',' ','D','e','m','o' }
+    {'S','i','m','p','l','e',' ','H','I','D',' ',
+    'D','e','v','i','c','e',' ','D','e','m','o' }
 };
 
 /*************************************
@@ -332,54 +329,61 @@ USB_DEVICE_STRING_DESCRIPTORS_TABLE stringDescriptors[3]=
  *******************************************/
 USB_DEVICE_CONFIGURATION_DESCRIPTORS_TABLE highSpeedConfigDescSet[]=
 {
-    highSpeedConfigurationDescriptor
+    highSpeedConfigurationDescriptor1
 };
 
 /*******************************************
  *  Device Configuration Decriptor
  *******************************************/
-const uint8_t fullSpeedConfigurationDescriptor[] =
+const uint8_t fullSpeedConfigurationDescriptor1[] =
 {
-    /* Configuration Descriptor */
-
-    0x09,                                                // Size of this descriptor in bytes
-    USB_DESCRIPTOR_CONFIGURATION,                        // CONFIGURATION descriptor type
-    0x22,0x00,                                           // Total length of data for this cfg
-    1,                                                   // Number of interfaces in this cfg
-    1,                                                   // Index value of this configuration
-    0,                                                   // Configuration string index
-    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED,  // Attributes, see usb_device.h
-    50,                                                  // Max power consumption (2X mA)
+    /* Configuration Descriptor Header */
+    0x09,			                        			// Size of this descriptor in bytes
+    USB_DESCRIPTOR_CONFIGURATION,                       // CONFIGURATION descriptor type
+    0x29,0x00,            	                        	// Total length of data for this cfg
+    1,                                                  // Number of interfaces in this cfg
+    1,                                                  // Index value of this configuration
+    0,                                                  // Configuration string index
+    USB_ATTRIBUTE_DEFAULT | USB_ATTRIBUTE_SELF_POWERED, // Attributes, see usb_chapter_9.h
+    50,                                                 // Max power consumption (2X mA)
 
     /* Interface Descriptor */
-
-    0x09,                                            // Size of this descriptor in bytes
-    USB_DESCRIPTOR_INTERFACE,                        // INTERFACE descriptor type
-    0,                                               // Interface Number
-    0,                                               // Alternate Setting Number
-    1,                                               // Number of endpoints in this intf
-    USB_HID_CLASS_CODE,                              // Class code
-    USB_HID_SUBCLASS_CODE_BOOT_INTERFACE_SUBCLASS ,  // Subclass code
-    USB_HID_PROTOCOL_CODE_MOUSE,                     // Protocol code
-    0,                                               // Interface string index
+    0x09,						// Size of this descriptor in bytes
+    USB_DESCRIPTOR_INTERFACE,   // INTERFACE descriptor type
+    0,                          // Interface Number
+    0,                          // Alternate Setting Number
+    2,                          // Number of endpoints in this intf
+    USB_HID_CLASS_CODE,         // Class code
+    0,     						// Subclass code
+    0,     						// Protocol code
+    0,                          // Interface string index
 
     /* HID Class-Specific Descriptor */
 
-    0x09,                           // Size of this descriptor in bytes
+    0x09,			    			// Size of this descriptor in bytes
     USB_HID_DESCRIPTOR_TYPES_HID,   // HID descriptor type
-    0x11, 0x01,                     // HID Spec Release Number in BCD format (1.11)
+    0x11,0x01,                      // HID Spec Release Number in BCD format (1.11)
     0x00,                           // Country Code (0x00 for Not supported)
-    0x1,                            // Number of class descriptors, see usbcfg.h
+    0x01,                           // Number of class descriptors, see usbcfg.h
     USB_HID_DESCRIPTOR_TYPES_REPORT,// Report descriptor type
-    0x32,0x00,                      // Size of the report descriptor
+    0x1C,0x00,            // Size of the report descriptor
 
     /* Endpoint Descriptor */
 
-    0x07,                           // Size of this descriptor
+    0x07,
     USB_DESCRIPTOR_ENDPOINT,        // Endpoint Descriptor
     0x1 | USB_EP_DIRECTION_IN,      // EndpointAddress
     USB_TRANSFER_TYPE_INTERRUPT,    // Attributes
-    0x40, 0x00,                     // size
+    0x08,0x00,                      // Size
+    0x01,                           // Interval
+
+    /* Endpoint Descriptor */
+
+    0x07,
+    USB_DESCRIPTOR_ENDPOINT,        // Endpoint Descriptor
+    0x1 | USB_EP_DIRECTION_OUT,     // EndpointAddress
+    USB_TRANSFER_TYPE_INTERRUPT,    // Attributes
+    0x08,0x00,                      // Size
     0x01                            // Interval
 };
 
@@ -388,29 +392,27 @@ const uint8_t fullSpeedConfigurationDescriptor[] =
  *******************************************/
 USB_DEVICE_CONFIGURATION_DESCRIPTORS_TABLE fullSpeedConfigDescSet[]=
 {
-    fullSpeedConfigurationDescriptor
+    fullSpeedConfigurationDescriptor1
 };
-
 
 /*******************************************
  * USB Device Layer Master Descriptor Table
  *******************************************/
 const USB_DEVICE_MASTER_DESCRIPTOR usbMasterDescriptor =
 {
-    &usbDeviceDescriptor,       /* Full speed device desc is supported*/
+    &usbDeviceDescriptor,       /* Full speed descriptor */
     1,                          /* Total number of full speed configurations available */
-    &fullSpeedConfigDescSet[0],                       /* Pointer to array of full speed configurations descriptors. */
+    &fullSpeedConfigDescSet[0], /* Pointer to array of full speed configurations descriptors*/
 
-    &usbDeviceDescriptor,       /* High speed descriptor */
+    &usbDeviceDescriptor,       /* High speed device desc is not supported*/
     1,                          /* Total number of high speed configurations available */
-    &highSpeedConfigDescSet[0], /* Pointer to array of high speed configurations descriptors*/
+    highSpeedConfigDescSet,     /* Pointer to array of high speed configurations descriptors. Not supported*/
 
     3,                          /* Total number of string descriptors available */
     stringDescriptors,          /* Pointer to array of string descriptors */
 
-    &deviceQualifierDescriptor1,/* Pointer to full speed dev qualifier. Not supported */
-    &deviceQualifierDescriptor1,/* Pointer to high speed dev qualifier. Not supported */
-
+    &deviceQualifierDescriptor1, /* Pointer to full speed dev qualifier. Not supported */
+    &deviceQualifierDescriptor1, /* Pointer to high speed dev qualifier. Not supported */
 };
 
 

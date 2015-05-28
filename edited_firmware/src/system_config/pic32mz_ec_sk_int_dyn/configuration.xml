@@ -17,7 +17,7 @@
     </Entry>
     <Entry>
       <Name>system_init.c</Name>
-      <Checksum>7384C8D6606F57565B4787905CF177D1</Checksum>
+      <Checksum>54635B944E31B0B35403310083807CA2</Checksum>
     </Entry>
     <Entry>
       <Name>system_tasks.c</Name>
@@ -29,7 +29,7 @@
     </Entry>
     <Entry>
       <Name>system_config.h</Name>
-      <Checksum>C810EAC5FFEE5DD314DE99A6243CFD29</Checksum>
+      <Checksum>46E97417870AAEF0AE1893C73E98EF2B</Checksum>
     </Entry>
     <Entry>
       <Name>sys_ports_static.c</Name>

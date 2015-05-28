@@ -186,13 +186,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /* EP0 size in bytes */
 #define USB_DEVICE_EP0_BUFFER_SIZE      64
 
-#define USB_DEVICE_SOF_EVENT_ENABLE
 
 
 
 
 /* Maximum instances of HID function driver */
 #define USB_DEVICE_HID_INSTANCES_NUMBER     1
+
+
+
+
+
 
 /* HID Transfer Queue Size for both read and
    write. Applicable to all instances of the
@@ -201,31 +205,17 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Configuration specific application constants.
+// Section: Configuration specific application constants
 // *****************************************************************************
 // *****************************************************************************
 
-/* Tick time in 125 usec units */
-#define APP_USB_SWITCH_DEBOUNCE_COUNT (1280)
+#define APP_MAKE_BUFFER_DMA_READY __attribute__ ((coherent, aligned(4)))
 
-/* Macro defines the conversion factor to be
- * multiplied to convert to millisecs*/
-#define APP_USB_CONVERT_TO_MILLISECOND (1/8)
+#define APP_USB_LED_1 BSP_LED_1
+#define APP_USB_LED_2 BSP_LED_2
+#define APP_USB_LED_3 BSP_LED_3
 
-/* Macro defines USB internal DMA Buffer criteria*/
-#define APP_MAKE_BUFFER_DMA_READY __attribute__((coherent, aligned(4)))
-
-/* Macros defines board specific led */
-#define APP_USB_LED_1    BSP_LED_1
-
-/* Macros defines board specific led */
-#define APP_USB_LED_2    BSP_LED_2
-
-/* Macros defines board specific led */
-#define APP_USB_LED_3    BSP_LED_3
-
-/* Macros defines board specific switch */
-#define APP_USB_SWITCH_1    BSP_SWITCH_1
+#define APP_USB_SWITCH_1 BSP_SWITCH_1
 
 
 #endif // _SYSTEM_CONFIG_H
